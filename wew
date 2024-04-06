@@ -1,0 +1,43 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class Archer_Muve : MonoBehaviour
+{
+    public Transform[] movePoints; // Массив точек, к которым будет перемещаться персонаж
+    private int currentPointIndex = -1; // Индекс текущей точки
+    private NavMeshAgent navMeshAgent;
+    private int randomIndex; // Перемещаем переменную randomIndex в качестве поля класса
+
+    private bool isReachedPoint = false; // Флаг, указывающий, достигнута ли уже точка
+
+    void Start()
+    {
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        GetNextRandomPoint(); // Выбираем первую точку случайным образом
+    }
+
+    void Update()
+    {
+        if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance < 0.5f && !isReachedPoint)
+        {
+            isReachedPoint = true; // Устанавливаем флаг, что точка достигнута
+            GetNextRandomPoint(); // Выбираем следующую случайную точку
+        }
+    }
+
+
+
+    void GetNextRandomPoint()
+    {
+        do
+        {
+            randomIndex = Random.Range(0, movePoints.Length); // Выбираем случайный индекс
+        } while (randomIndex == currentPointIndex); // Проверяем, чтобы новая точка не совпадала с текущей
+
+        currentPointIndex = randomIndex;
+        navMeshAgent.SetDestination(movePoints[currentPointIndex].position); // Устанавливаем новую точку назначения
+        isReachedPoint = false; // Сбрасываем флаг достижения точки
+    }
+}
